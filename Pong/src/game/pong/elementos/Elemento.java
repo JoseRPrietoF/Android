@@ -34,4 +34,14 @@ public abstract class Elemento {
 		return new Rect(getOrigenX(), getOrigenY(), getOrigenX() + ancho,
 				getOrigenY() + alto);
 	}
+	
+	
+	// modificar el origen de las coordenadas
+	public void setOrigenY(int newY) {
+		origen.setY(newY);
+	}
+	
+	public void setOrigenX(int newX) {
+		origen.setX(newX);
+	}
 }

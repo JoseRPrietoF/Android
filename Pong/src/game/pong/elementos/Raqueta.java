@@ -8,9 +8,9 @@ public class Raqueta extends Elemento implements MoverElemento {
 	}
 
 	@Override
-	public void move() {
-		
-
+	public void move(int x, int y) {
+		origen.setY(origen.getY() + y); // Se Suma a si misma
+		// Como no queremos mover X, no creamos este.
 	}
-
+	
 }
