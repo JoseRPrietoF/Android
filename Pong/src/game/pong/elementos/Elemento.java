@@ -44,4 +44,12 @@ public abstract class Elemento {
 	public void setOrigenX(int newX) {
 		origen.setX(newX);
 	}
+	
+	// Método para saber si podemos mover 
+	// Evita que se salgan los elementos de la pantalla
+	public boolean canMove(int x, int y, Rect screen) {
+		return screen.contains(origen.getX() + x, origen.getY() + y,
+				origen.getX() + ancho + x, origen.getY() + alto + y);
+		// Vigila si la pantalla tiene suficiente espacio
+	}
 }
