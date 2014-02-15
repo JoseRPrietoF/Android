@@ -30,9 +30,13 @@ public class PongGameThread extends Thread {
 				synchronized (sh) {
 					view.onDraw(canvas);
 				}
-			} finally {
-				if (canvas != null)
+			} catch(Exception e){
+				System.out.println(e);
+			}finally {
+				if (canvas != null){
 					sh.unlockCanvasAndPost(canvas);
+				}
+					
 			}
 		}
 	}

@@ -17,6 +17,9 @@ import android.view.SurfaceView;
 public class PongGameView extends SurfaceView 
 						implements SurfaceHolder.Callback {
 
+	public static final int UMBRAL_TACTIL = 70;
+	// Constante para ampliar los movimientos con la parte tactil
+	
 	private PongGameThread paintThread;
 	private BolaMoveThread bolaThread;
 
@@ -68,6 +71,7 @@ public class PongGameView extends SurfaceView
 				bolaThread.join();
 				retry = false;
 			} catch (InterruptedException e) {
+			
 			}
 		}
 	}
@@ -90,7 +94,13 @@ public class PongGameView extends SurfaceView
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:// hemos pulsado
-			if (raquetaIzda.getRectElemento().contains(x, y)) { // Contains nos
+			Rect parteTactil; // Copiaremos el elemento raqueta 
+							//y añadiremos un extra de tamaño para que sea mas comodo el control
+			parteTactil = new Rect(raquetaIzda.getRectElemento());
+			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top, 
+					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
+			// Se compara con la copia de la raqueta
+			if (parteTactil.contains(x, y)) { // Contains nos
 																// ahorra
 																// condicionales,
 				// verifica si la X y la Y estan dentro del rectangulo realmente
@@ -98,7 +108,11 @@ public class PongGameView extends SurfaceView
 				origenY = y;
 				break;
 			}
-			if (raquetaDcha.getRectElemento().contains(x, y)) {
+			// SE hace lo mismo que con la otra raqueta
+			parteTactil = new Rect(raquetaDcha.getRectElemento());
+			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top, 
+					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
+			if (parteTactil.contains(x, y)) {
 				elementoActivo = raquetaDcha;
 				origenY = y;
 				break;
