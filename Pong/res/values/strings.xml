@@ -6,5 +6,7 @@
     <string name="jugar">Jugar</string>
     <string name="opciones">Opciones</string>
     <string name="salir">Salir</string>
+    <string name="sonido">Sonido</string>
+    <string name="vibracion">Vibración</string>
 
 </resources>

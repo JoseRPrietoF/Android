@@ -12,20 +12,17 @@
         android:id="@+id/pongImg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="-20dp"
-        android:layout_marginTop="49dp"
         android:src="@drawable/pong" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_alignLeft="@+id/pongImg"
+        android:layout_below="@+id/pongImg"
+        android:layout_marginTop="40dp"
         android:orientation="vertical" >
 
         <Button

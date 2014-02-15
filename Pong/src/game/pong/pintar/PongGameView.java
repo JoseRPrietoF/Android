@@ -14,7 +14,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class PongGameView extends SurfaceView implements SurfaceHolder.Callback {
+public class PongGameView extends SurfaceView 
+						implements SurfaceHolder.Callback {
 
 	private PongGameThread paintThread;
 	private BolaMoveThread bolaThread;
@@ -50,7 +51,8 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 
 		// Empezamos a mover la bola
 		bolaThread = new BolaMoveThread((Bola) bola, (Raqueta) raquetaIzda,
-				(Raqueta) raquetaDcha, new Rect(0, 0, getWidth(), getHeight()));
+				(Raqueta) raquetaDcha, new Rect(0, 0, getWidth(), getHeight()), 
+				this.getContext());
 		bolaThread.setRunning(true);
 		bolaThread.start();
 	}
