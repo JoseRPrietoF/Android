@@ -10,9 +10,11 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PointF;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -28,15 +30,16 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	private Elemento raquetaIzda;
 	private Elemento raquetaDcha;
 	private Elemento bola;
-	private Elemento elementoActivo = null;
+	private SparseArray<Elemento> elementosActivos = null;
 	private int origenY;
 
 	// Marcador
 	private Marcador marcador;
 	private Paint paint; // SE cargara aqui la fuente nueva
+
 	// Ya que si la cargamos cada vez, puede consumir muchisimos recursos
 
-	public PongGameView(Context context,  int puntosIzda, int puntosDcha) {
+	public PongGameView(Context context, int puntosIzda, int puntosDcha) {
 		super(context);
 		getHolder().addCallback(this); // Para usar SurfaceView
 		// Creamos marcador, posiblemente con puntos de partida sin acabar
@@ -50,6 +53,8 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		// SE ha cargado la fuente
 		paint.setTextSize(80);
 		paint.setAntiAlias(true);
+		elementosActivos = new SparseArray<Elemento>();
+
 	}
 
 	@Override
@@ -108,9 +113,18 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	public boolean onTouchEvent(MotionEvent event) {
 		int x = (int) event.getX();
 		int y = (int) event.getY();
+		// get pointer index from the event object
+		int pointerIndex = event.getActionIndex();
 
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:// hemos pulsado
+		// get pointer ID
+		int pointerId = event.getPointerId(pointerIndex);
+
+		// get masked (not specific to a pointer) action
+		int maskedAction = event.getActionMasked();
+
+		switch (maskedAction) {
+		case MotionEvent.ACTION_DOWN:
+		case MotionEvent.ACTION_POINTER_DOWN: // hemos pulsado
 			Rect parteTactil; // Copiaremos el elemento raqueta
 								// y añadiremos un extra de tamaño para que sea
 								// mas comodo el control
@@ -122,7 +136,7 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 												// ahorra
 												// condicionales,
 				// verifica si la X y la Y estan dentro del rectangulo realmente
-				elementoActivo = raquetaIzda;
+				elementosActivos.put(pointerId, raquetaIzda);
 				origenY = y;
 				break;
 			}
@@ -131,7 +145,7 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
 					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
 			if (parteTactil.contains(x, y)) {
-				elementoActivo = raquetaDcha;
+				elementosActivos.put(pointerId, raquetaDcha);
 				origenY = y;
 				break;
 			}
@@ -139,6 +153,19 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		case MotionEvent.ACTION_MOVE:// hemos arrastrado
 			// Solo queremos mover verticalmente - Modificaremos coord. Y
 			// Restar = ir hacia arriba / Sumar = hacia abajo
+			for (int size = event.getPointerCount(), i = 0; i < size; i++) {
+				Raqueta r = (Raqueta) elementosActivos.get(event
+						.getPointerId(i));
+				if (r != null) {
+					if (r.canMove(0, (int)event.getY(i) - origenY, new Rect(0, 0, getWidth(),
+							getHeight()))) {
+						r.move(0, (int)event.getY(i) - origenY); // 0 para no mover eje X
+					}
+				}
+			}
+			origenY = y;
+			break;
+			/*
 			if (elementoActivo != null) {
 				// Calcularemos la diferencia de posiciones para mandarselo a
 				// move()
@@ -151,11 +178,13 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 				}
 
 			}
-			origenY = y;
-			break;
-		case MotionEvent.ACTION_UP:// hemos levantado
-			elementoActivo = null;
-			break;
+			*/
+		case MotionEvent.ACTION_UP:
+		case MotionEvent.ACTION_POINTER_UP:// hemos levantado
+			elementosActivos.remove(pointerId);
+		     break;
+			/*elementoActivo = null;
+			break;*/
 		}
 
 		return true;
@@ -183,12 +212,12 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 				getWidth() / 2 - 80, 80, paint);
 		canvas.drawText(Integer.toString(marcador.getPuntosDcha()),
 				getWidth() / 2 + 80, 80, paint);
-		// Pintamos los puntos de cada lado 80px de distancia de la linea divisoria
+		// Pintamos los puntos de cada lado 80px de distancia de la linea
+		// divisoria
 	}
 
 	public Marcador getMarcador() {
 		return marcador;
 	}
-	
-	
+
 }
