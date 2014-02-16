@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:key="@string/pa_key">
+
+    <CheckBoxPreference
+        android:key="@string/sonido_key"
+        android:summary="@string/sonido_summary"
+        android:title="@string/sonido_title" 
+        android:enabled="true"/>
+
+</PreferenceScreen>

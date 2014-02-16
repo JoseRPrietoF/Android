@@ -190,5 +190,13 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		return marcador;
 	}
 	
+	public void setSpeed(int speed){
+		bolaThread.setSpeed(speed);
+	}
+	
+	public int getSpeed(){
+		return bolaThread.getSpeed();
+	}
+	
 	
 }

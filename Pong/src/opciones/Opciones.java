@@ -35,4 +35,12 @@ public class Opciones {
 	public boolean vibrationEnabled() {
 		return vibracion;
 	}
+
+	public void setSonido(boolean sonido) {
+		this.sonido = sonido;
+	}
+
+	public void setVibracion(boolean vibracion) {
+		this.vibracion = vibracion;
+	}
 }

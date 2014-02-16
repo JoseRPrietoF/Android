@@ -1,27 +1,24 @@
 package game.pong;
 
 import opciones.Opciones;
-import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.CheckBox;
+import android.preference.PreferenceActivity;
 
-public class PongOpcionesActivity extends Activity {
+public class PongOpcionesActivity extends PreferenceActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.opciones);
+		addPreferencesFromResource(R.xml.preferencies);
 		
-		CheckBox sonido = (CheckBox) findViewById(R.id.checkBoxSonido);
-		sonido.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Opciones.getInstance().toggleSound();
-			}
-		});
+		SharedPreferences pref = 
+				getSharedPreferences("Opciones", 
+				Context.MODE_PRIVATE);
 
+		Opciones.getInstance().setSonido(pref.getBoolean("sonido_key",false));
+		/*
 		CheckBox vibracion = (CheckBox) findViewById(R.id.checkBoxVibracion);
 		vibracion.setOnClickListener(new OnClickListener() {
 			@Override
@@ -31,7 +28,7 @@ public class PongOpcionesActivity extends Activity {
 		});
 
 		sonido.setChecked(Opciones.getInstance().soundEnabled());
-		vibracion.setChecked(Opciones.getInstance().vibrationEnabled());
+		vibracion.setChecked(Opciones.getInstance().vibrationEnabled());*/
 	}
 	
 }

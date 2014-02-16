@@ -14,7 +14,7 @@ public class BolaMoveThread extends Thread {
 	private Rect screen;
 
 	private boolean run;
-	private int speed;
+	private int speed = 1;
 	
 	private Vibrator v = null;
 	
@@ -34,7 +34,6 @@ public class BolaMoveThread extends Thread {
 		this.raquetaDcha = dcha;
 		this.screen = screen;
 		this.run = false;
-		this.speed = 1;
 		this.marcador = marcador;
 		this.punto = false;
 		this.v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
@@ -102,4 +101,14 @@ public class BolaMoveThread extends Thread {
 		bola.setOrigenX(bolaInitX);
 		bola.setOrigenY(bolaInitY);
 	}
+
+	public int getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	
+	
 }
