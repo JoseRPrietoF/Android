@@ -71,30 +71,41 @@ public class Bola extends Elemento implements MoverElemento {
 	}
 
 	// Método para rebotar la bola
-	public void rebota(int x, int y, Rect screen, Rect raquetaIzda,
+	// Devolverá -1 si la bola entró por la izquierda, 
+	//1 si entró por la derecha y 0 si sigue en la pantalla.
+	public int rebota(int x, int y, Rect screen, Rect raquetaIzda,
 			Rect raquetaDcha) {
 		// Bordes de pantalla
-		if (!canMove(x, y, screen)) {
-			switch (direccion) {
+		if(!canMove(x,y,screen)) {
+			switch(direccion) {
 			case DCHA_ARRIBA:
-				direccion = (origen.getY() - y <= screen.top) ? DCHA_ABAJO
-						: IZDA_ARRIBA;
+				if(origen.getY() - y <= screen.top)
+					direccion = DCHA_ABAJO;
+				else
+					return 1; // Entro por la derecha
 				break;
 			case IZDA_ARRIBA:
-				direccion = (origen.getY() - y <= screen.top) ? IZDA_ABAJO
-						: DCHA_ARRIBA;
+				if(origen.getY() - y <= screen.top)
+					direccion = IZDA_ABAJO;
+				else
+					return -1; // Entro por la izquierda
 				break;
 			case IZDA_ABAJO:
-				direccion = (origen.getY() + alto + y >= screen.bottom) ? IZDA_ARRIBA
-						: DCHA_ABAJO;
+				if(origen.getY() + alto + y >= screen.bottom)
+					direccion = IZDA_ARRIBA;
+				else
+					return -1; // Entro por la izquierda
 				break;
 			case DCHA_ABAJO:
-				direccion = (origen.getY() + alto + y >= screen.bottom) ? DCHA_ARRIBA
-						: IZDA_ABAJO;
+				if(origen.getY() + alto + y >= screen.bottom)
+					direccion = DCHA_ARRIBA;
+				else
+					return 1; // Entro por la derecha
 				break;
 			}
 		}
 		// Vigilamos si choca con la raqueta
+		// Si choca con la raqueta, seguira la bola en pantalla
 		Rect raqueta = null;
 		if (hit(x, y, raquetaIzda)) // Si choca con las raquetas
 			raqueta = raquetaIzda;
@@ -120,5 +131,7 @@ public class Bola extends Elemento implements MoverElemento {
 				break;
 			}
 		}
+		
+		return 0; // La bola seguira en la pantalla
 	}
 }

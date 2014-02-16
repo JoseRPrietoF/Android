@@ -19,6 +19,9 @@ public class MainActivity extends Activity implements OnClickListener {
 	int pos;
 
 	// ------------------------------//
+	// Marcador Juego
+	private int puntosIzdaIniciales = 0;
+	private int puntosDchaIniciales = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,25 @@ public class MainActivity extends Activity implements OnClickListener {
 
 	public void lanzarJuego(View view) {
 		Intent juego = new Intent(this, PongJuego.class);
-		this.startActivity(juego);
+		// Si habia una partida empezada, se pondran los puntos
+		juego.putExtra("PuntosIzda", puntosIzdaIniciales);
+		juego.putExtra("PuntosDcha", puntosDchaIniciales);
+		this.startActivityForResult(juego, 1);
+		// Nos devolvera u nresultado, asi podremos guardar puntuacion
+	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch(requestCode) {
+		case 1:
+			if (resultCode == Activity.RESULT_OK && data.getExtras() != null) {
+				// solo si el codigo devuelto es RESULT_OK, procesamos
+				puntosIzdaIniciales = data.getExtras().getInt("PuntosIzda");
+				puntosDchaIniciales = data.getExtras().getInt("PuntosDcha");
+			}
+			break;
+		}
 	}
 
 	public void salir(View view) {
