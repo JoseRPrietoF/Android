@@ -12,9 +12,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
-import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -33,8 +33,9 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	private Elemento bola;
 	//private Elemento elementoActivo = null;
 	private int idIzda = -1, idDcha = -1;
-	private Pointer rIzda = new Pointer();
-	private Pointer rDcha = new Pointer();
+	//private Pointer rIzda = new Pointer();
+	//private Pointer rDcha = new Pointer();
+	private SparseArray<Pointer> mActivePointers;
 	private int origenY;
 
 	// Marcador
@@ -56,10 +57,11 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		// SE ha cargado la fuente
 		paint.setTextSize(80);
 		paint.setAntiAlias(true);
-		rIzda.y = -1;
+		/*rIzda.y = -1;
 		rIzda.setName("Izda");
 		rDcha.y = -1;
-		rDcha.setName("Dcha");
+		rDcha.setName("Dcha");*/
+		mActivePointers = new SparseArray<Pointer>();
 	}
 
 	@Override
@@ -118,8 +120,7 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int x = (int) event.getX();
-		int y = (int) event.getY();
+		
 		// get pointer index from the event object
 	    int pointerIndex = event.getActionIndex();
 
@@ -129,6 +130,9 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	    // get masked (not specific to a pointer) action
 	    int maskedAction = event.getActionMasked();
 
+	    int x = (int) event.getX(pointerIndex);
+		int y = (int) event.getY(pointerIndex);
+	    
 		switch (maskedAction) {
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:// hemos pulsado
@@ -139,8 +143,13 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 			// Se compara con la copia de la raqueta
 			if (parteTactil.contains(x, y)) { // Izda
 				//elementoActivo = raquetaIzda;
-				Toast.makeText(getContext(), "Izda", Toast.LENGTH_SHORT).show();
-				rIzda.y = y;
+				
+				Pointer f = new Pointer();
+				f.x = event.getX(pointerIndex);
+			    f.y = event.getY(pointerIndex);
+			    f.setName("Izda");
+			    mActivePointers.put(pointerId, f);
+			    Toast.makeText(getContext(), " "+mActivePointers.size()+" ", Toast.LENGTH_SHORT).show();
 				break;
 			}
 			// SE hace lo mismo que con la otra raqueta
@@ -149,30 +158,45 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
 			if (parteTactil.contains(x, y)) {
 				//elementoActivo = raquetaDcha;
-				rDcha.y = y;
-				Toast.makeText(getContext(), "Dcha", Toast.LENGTH_SHORT).show();
+				Pointer f = new Pointer();
+				f.x = event.getX(pointerIndex);
+			    f.y = event.getY(pointerIndex);
+			    f.setName("Dcha");
+			    mActivePointers.put(pointerId, f);
+				
 				break;
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
-			if (rDcha.y != -1) {
-				Raqueta r = (Raqueta) raquetaDcha; // Cast para usar move()
-				
-				if (r.canMove(0, y - (int)rDcha.y, new Rect(0, 0, getWidth(),
-						getHeight()))) {
-					r.move(0, y -  (int)rDcha.y); // 0 para no mover eje X
+			
+			//for (int size = event.getPointerCount(), i = 0; i < size; i++) {
+			for (int i = 0; i < mActivePointers.size(); i++) {
+				Pointer point = mActivePointers.get(event.getPointerId(i));
+				if (point != null){
+					//Toast.makeText(getContext(), "not null", Toast.LENGTH_SHORT).show();
+					if (point.toString().equals("Dcha")) {
+						Raqueta r = (Raqueta) raquetaDcha; // Cast para usar move()
+						
+						if (r.canMove(0, y - (int)point.y, new Rect(0, 0, getWidth(),
+								getHeight()))) {
+							r.move(0, y -  (int)point.y); // 0 para no mover eje X
+						}
+						point.y= y;
+					}
+					if (point.toString().equals("Izda")) {
+						//Toast.makeText(getContext(), "Izda", Toast.LENGTH_SHORT).show();
+						Raqueta r = (Raqueta) raquetaIzda; // Cast para usar move()
+						
+						if (r.canMove(0, y - (int)point.y, new Rect(0, 0, getWidth(),
+								getHeight()))) {
+							r.move(0, y -  (int)point.y); // 0 para no mover eje X
+						}
+						point.y= y;
+					}
 				}
-				rDcha.y= y;
 			}
-			if (rIzda.y != -1) {
-				Raqueta r = (Raqueta) raquetaIzda; // Cast para usar move()
-				
-				if (r.canMove(0, y - (int)rIzda.y, new Rect(0, 0, getWidth(),
-						getHeight()))) {
-					r.move(0, y -  (int)rIzda.y); // 0 para no mover eje X
-				}
-				rIzda.y= y;
-			}
+			
+			
 			
 			break;
 		case MotionEvent.ACTION_UP:// hemos levantado
@@ -180,8 +204,9 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		case MotionEvent.ACTION_CANCEL:
 			//elementoActivo = null;
 			//break;
-			rIzda.y = -1;
-			rDcha.y = -1;
+			//Toast.makeText(getContext(), " "+mActivePointers.size()+" ", Toast.LENGTH_SHORT).show();
+
+			mActivePointers.remove(pointerId);
 		}
 
 		return true;
