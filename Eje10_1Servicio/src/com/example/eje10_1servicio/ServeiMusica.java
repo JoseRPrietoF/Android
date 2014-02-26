@@ -1,4 +1,5 @@
 package com.example.eje10_1servicio;
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -31,20 +32,24 @@ public class ServeiMusica extends Service {
 	public void onDestroy() {
 		Toast.makeText(this, "Servei aturat", Toast.LENGTH_SHORT).show();
 		reproductor.stop();
-		nm.cancel(ID_NOTIFICACIO_CREAR);
+		nm.cancel(ID_NOTIFICACIO_CREAR); // Elimina la notificacio creada
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public int onStartCommand(Intent intent, int flags, int idArranc) {
 		Toast.makeText(this, "Servei arrancat " + idArranc, Toast.LENGTH_SHORT).show();
 		reproductor.start();
-		Notification notificacio = new Notification(R.drawable.ic_launcher, "Crat Servei de Música",
-				System.currentTimeMillis());
+		
+		Notification.Builder builder = new Notification.Builder(this);
+		builder.setContentTitle("Creant servei de música")
+								.setSmallIcon(R.drawable.ic_launcher);
+		Notification n = builder.build();
 		// Informacio adicional
 		PendingIntent intencioPendent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
-		notificacio.setLatestEventInfo(this, "Reproduint Música", "Informació addicional", intencioPendent);
+		n.setLatestEventInfo(this, "Reproduint Música", "Informació addicional", intencioPendent);
 		// Pasa la notificacio creada al NM
-		nm.notify(ID_NOTIFICACIO_CREAR,notificacio);
+		nm.notify(ID_NOTIFICACIO_CREAR,n);
 		return START_STICKY;
 	}
 
