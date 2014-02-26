@@ -130,42 +130,48 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	    // get masked (not specific to a pointer) action
 	    int maskedAction = event.getActionMasked();
 
-	    int x = (int) event.getX(pointerIndex);
-		int y = (int) event.getY(pointerIndex);
+	    int[] x = new int[5];
+	    int[] y = new int[5];
 	    
 		switch (maskedAction) {
 		case MotionEvent.ACTION_DOWN:
 		case MotionEvent.ACTION_POINTER_DOWN:// hemos pulsado
-			Rect parteTactil; 
-			parteTactil = new Rect(raquetaIzda.getRectElemento());
-			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
-					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
-			// Se compara con la copia de la raqueta
-			if (parteTactil.contains(x, y)) { // Izda
-				//elementoActivo = raquetaIzda;
+			for (int i=0; i< event.getPointerCount(); i++){
 				
-				Pointer f = new Pointer();
-				f.x = event.getX(pointerIndex);
-			    f.y = event.getY(pointerIndex);
-			    f.setName("Izda");
-			    mActivePointers.put(pointerId, f);
-			    Toast.makeText(getContext(), " "+mActivePointers.size()+" ", Toast.LENGTH_SHORT).show();
-				break;
+				x[i] = (int) event.getX(event.getPointerId(i));
+				y[1] = (int) event.getY(event.getPointerId(i));
+				Rect parteTactil; 
+				parteTactil = new Rect(raquetaIzda.getRectElemento());
+				parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
+						parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
+				// Se compara con la copia de la raqueta
+				if (parteTactil.contains(x[i], y[i])) { // Izda
+					//elementoActivo = raquetaIzda;
+					
+					Pointer f = new Pointer();
+					f.x = event.getX(pointerIndex);
+				    f.y = event.getY(pointerIndex);
+				    f.setName("Izda");
+				    mActivePointers.put(pointerId, f);
+				   // Toast.makeText(getContext(), " "+ event.getPointerCount()+" ", Toast.LENGTH_SHORT).show();
+					//break;
+				}
+				// SE hace lo mismo que con la otra raqueta
+				parteTactil = new Rect(raquetaDcha.getRectElemento());
+				parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
+						parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
+				if (parteTactil.contains(x[i], y[i])) {
+					//elementoActivo = raquetaDcha;
+					Pointer f = new Pointer();
+					f.x = event.getX(pointerIndex);
+				    f.y = event.getY(pointerIndex);
+				    f.setName("Dcha");
+				    mActivePointers.put(pointerId, f);
+					
+					//break;
+				}
 			}
-			// SE hace lo mismo que con la otra raqueta
-			parteTactil = new Rect(raquetaDcha.getRectElemento());
-			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
-					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
-			if (parteTactil.contains(x, y)) {
-				//elementoActivo = raquetaDcha;
-				Pointer f = new Pointer();
-				f.x = event.getX(pointerIndex);
-			    f.y = event.getY(pointerIndex);
-			    f.setName("Dcha");
-			    mActivePointers.put(pointerId, f);
-				
-				break;
-			}
+			
 			break;
 		case MotionEvent.ACTION_MOVE:
 			
@@ -175,23 +181,24 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 				if (point != null){
 					//Toast.makeText(getContext(), "not null", Toast.LENGTH_SHORT).show();
 					if (point.toString().equals("Dcha")) {
+						Toast.makeText(getContext(), "Dcha", Toast.LENGTH_SHORT).show();
 						Raqueta r = (Raqueta) raquetaDcha; // Cast para usar move()
 						
-						if (r.canMove(0, y - (int)point.y, new Rect(0, 0, getWidth(),
+						if (r.canMove(0, y[i] - (int)point.y, new Rect(0, 0, getWidth(),
 								getHeight()))) {
-							r.move(0, y -  (int)point.y); // 0 para no mover eje X
+							r.move(0, y[i] -  (int)point.y); // 0 para no mover eje X
 						}
-						point.y= y;
+						point.y= y[i];
 					}
 					if (point.toString().equals("Izda")) {
 						//Toast.makeText(getContext(), "Izda", Toast.LENGTH_SHORT).show();
 						Raqueta r = (Raqueta) raquetaIzda; // Cast para usar move()
 						
-						if (r.canMove(0, y - (int)point.y, new Rect(0, 0, getWidth(),
+						if (r.canMove(0, y[i] - (int)point.y, new Rect(0, 0, getWidth(),
 								getHeight()))) {
-							r.move(0, y -  (int)point.y); // 0 para no mover eje X
+							r.move(0, y[i] -  (int)point.y); // 0 para no mover eje X
 						}
-						point.y= y;
+						point.y= y[i];
 					}
 				}
 			}
