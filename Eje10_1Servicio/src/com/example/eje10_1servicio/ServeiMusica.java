@@ -39,7 +39,7 @@ public class ServeiMusica extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int idArranc) {
 		Toast.makeText(this, "Servei arrancat " + idArranc, Toast.LENGTH_SHORT).show();
-		reproductor.start();
+		//reproductor.start();
 		
 		Notification.Builder builder = new Notification.Builder(this);
 		builder.setContentTitle("Creant servei de música")
@@ -49,6 +49,15 @@ public class ServeiMusica extends Service {
 		PendingIntent intencioPendent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), 0);
 		n.setLatestEventInfo(this, "Reproduint Música", "Informació addicional", intencioPendent);
 		// Pasa la notificacio creada al NM
+		n.defaults |= Notification.DEFAULT_SOUND;
+		n.defaults |= Notification.DEFAULT_VIBRATE;
+		
+		//LED
+		n.defaults |= Notification.DEFAULT_LIGHTS;
+		n.ledARGB = 0x00ff00; // color verd
+		n.ledOnMS = 300;
+		n.ledOffMS = 1000;
+		n.flags |= Notification.FLAG_SHOW_LIGHTS;
 		nm.notify(ID_NOTIFICACIO_CREAR,n);
 		return START_STICKY;
 	}
