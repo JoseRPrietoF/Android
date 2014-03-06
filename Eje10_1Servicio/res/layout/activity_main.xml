@@ -34,4 +34,12 @@
         android:minWidth="120dip"
         android:text="Aturar servei" />
 
+    <Button
+        android:id="@+id/sos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:text="Socorro!!!" />
+
 </RelativeLayout>
