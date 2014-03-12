@@ -33,6 +33,11 @@ public class ServeiRemot extends Service {
 			return reproductor.getCurrentPosition();
 		}
 
+		@Override
+		public void atura() throws RemoteException {
+			reproductor.stop();
+		}
+
 	};
 	
 	@Override
