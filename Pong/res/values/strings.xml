@@ -7,8 +7,8 @@
     <string name="opciones">Opciones</string>
     <string name="salir">Salir</string>
     <string name="sonido_title">Sonido</string>
-    <string name="sonido_key">sonido</string>
-    <string name="sonido_summary"></string>
+    <string name="sonido_key">sonido_key</string>
+    <string name="sonido_summary">Sonido summary</string>
     <string name="vibracion">Vibración</string>
 	<string name="velocidad">Velocidad</string>
     <string name="pa_key">Opciones</string>

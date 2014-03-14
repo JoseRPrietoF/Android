@@ -18,15 +18,6 @@ public class Opciones {
 			opciones = new Opciones();
 		return opciones;
 	}
-
-	public void toggleSound() {
-		sonido = !sonido;
-	}
-
-	public void toggleVibration() {
-		vibracion = !vibracion;
-	}
-
 	// Devuelve el estado 
 	public boolean soundEnabled() {
 		return sonido;

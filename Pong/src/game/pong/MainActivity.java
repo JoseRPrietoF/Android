@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -34,8 +36,9 @@ public class MainActivity extends Activity implements OnClickListener {
 		opciones.setOnClickListener(this);
 		salir = (TextView) findViewById(R.id.salir);
 		salir.setOnClickListener(this);
+		mp = MediaPlayer.create(this, R.raw.audio );
+		//Toast.makeText(this, ""+Opciones.getInstance().soundEnabled(), Toast.LENGTH_SHORT).show();
 		if (Opciones.getInstance().soundEnabled()){
-			mp = MediaPlayer.create(this, R.raw.audio );
 			mp.start();
 		}
 		
@@ -47,6 +50,11 @@ public class MainActivity extends Activity implements OnClickListener {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		// TODO Auto-generated method stub
+		return super.onMenuItemSelected(featureId, item);
 	}
 
 	@Override
@@ -109,6 +117,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		//Toast.makeText(this, ""+Opciones.getInstance().soundEnabled(), Toast.LENGTH_SHORT).show();
 		if (Opciones.getInstance().soundEnabled()){
 			mp.seekTo(pos);
 			mp.start();	
