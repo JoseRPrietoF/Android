@@ -18,7 +18,6 @@ import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.Toast;
 
 public class PongGameView extends SurfaceView implements SurfaceHolder.Callback {
 
