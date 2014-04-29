@@ -4,6 +4,7 @@ import android.graphics.Rect;
 
 public abstract class Elemento {
 
+	public int origenYRelativo; // Simula origenY de cuando hay una sola raqueta, cada raqueta tendra su origen Y
 	protected Coordenada origen;
 	protected int ancho;
 	protected int alto;

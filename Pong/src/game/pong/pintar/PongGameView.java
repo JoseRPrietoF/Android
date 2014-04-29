@@ -5,6 +5,7 @@ import game.pong.elementos.Bola;
 import game.pong.elementos.BolaMoveThread;
 import game.pong.elementos.Coordenada;
 import game.pong.elementos.Elemento;
+import game.pong.elementos.Point;
 import game.pong.elementos.Raqueta;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,9 +14,11 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.Toast;
 
 public class PongGameView extends SurfaceView implements SurfaceHolder.Callback {
 
@@ -28,8 +31,8 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	private Elemento raquetaIzda;
 	private Elemento raquetaDcha;
 	private Elemento bola;
-	private Elemento elementoActivo = null;
-	private int origenY;
+	//private int origenY;
+	private SparseArray<Point> mActivePointers;
 
 	// Marcador
 	private Marcador marcador;
@@ -40,6 +43,7 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		super(context);
 		getHolder().addCallback(this); // Para usar SurfaceView
 		// Creamos marcador, posiblemente con puntos de partida sin acabar
+		mActivePointers = new SparseArray<Point>();
 		this.marcador = new Marcador(puntosIzda, puntosDcha);
 		// Cargaremos fuente, asignaremos color..
 		paint = new Paint();
@@ -106,11 +110,23 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int x = (int) event.getX();
-		int y = (int) event.getY();
+		// get pointer index from the event object
+	    int pointerIndex = event.getActionIndex();
 
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:// hemos pulsado
+	    // get pointer ID
+	    int pointerId = event.getPointerId(pointerIndex);
+
+	    // get masked (not specific to a pointer) action
+	    int maskedAction = event.getActionMasked();
+
+		switch (maskedAction) {
+	    case MotionEvent.ACTION_DOWN:
+		case MotionEvent.ACTION_POINTER_DOWN:// hemos pulsado
+			// 	new pointer
+			Point f = new Point();
+		    f.x = event.getX(pointerIndex);
+		    f.y = event.getY(pointerIndex);
+		    // ------
 			Rect parteTactil; // Copiaremos el elemento raqueta
 								// y añadiremos un extra de tamaño para que sea
 								// mas comodo el control
@@ -118,43 +134,57 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
 					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
 			// Se compara con la copia de la raqueta
-			if (parteTactil.contains(x, y)) { // Contains nos
+			if (parteTactil.contains((int)f.x, (int)f.y)) { // Contains nos
 												// ahorra
 												// condicionales,
 				// verifica si la X y la Y estan dentro del rectangulo realmente
-				elementoActivo = raquetaIzda;
-				origenY = y;
+				//elementoActivo = raquetaIzda;
+				f.setLado("I");
+				mActivePointers.put(pointerId, f);
+				raquetaIzda.origenYRelativo = (int)f.y;
 				break;
 			}
 			// SE hace lo mismo que con la otra raqueta
 			parteTactil = new Rect(raquetaDcha.getRectElemento());
 			parteTactil.set(parteTactil.left - UMBRAL_TACTIL, parteTactil.top,
 					parteTactil.right + UMBRAL_TACTIL, parteTactil.bottom);
-			if (parteTactil.contains(x, y)) {
-				elementoActivo = raquetaDcha;
-				origenY = y;
+			if (parteTactil.contains((int)f.x, (int)f.y)) {
+				//elementoActivo = raquetaDcha;
+				f.setLado("D");
+				mActivePointers.put(pointerId, f);
+				raquetaDcha.origenYRelativo = (int)f.y;
 				break;
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:// hemos arrastrado
 			// Solo queremos mover verticalmente - Modificaremos coord. Y
 			// Restar = ir hacia arriba / Sumar = hacia abajo
-			if (elementoActivo != null) {
-				// Calcularemos la diferencia de posiciones para mandarselo a
-				// move()
-				Raqueta r = (Raqueta) elementoActivo; // Cast para usar move()
-				// Le pasamos a canMove la posicion donde queremos mover
-				// Y la pantalla donde nos queremos mover en formacto rectangulo
-				if (r.canMove(0, y - origenY, new Rect(0, 0, getWidth(),
-						getHeight()))) {
-					r.move(0, y - origenY); // 0 para no mover eje X
-				}
+			for (int size = event.getPointerCount(), i = 0; i < size; i++) {
+				Point point = mActivePointers.get(event.getPointerId(i));
+				if (point != null) {
+					Raqueta r = null;
+					// Calcularemos la diferencia de posiciones para mandarselo a move()
+					if (point.getLado().equals("D"))
+						r = (Raqueta) raquetaDcha; // Cast para usar
+					else if (point.getLado().equals("I")) r = (Raqueta) raquetaIzda;
+					point.x = event.getX(i);
+			        point.y = event.getY(i);
+															// move()
+					// Le pasamos a canMove la posicion donde queremos mover
+					// Y la pantalla donde nos queremos mover en formacto
+					// rectangulo
+					if (r.canMove(0, (int)point.y - r.origenYRelativo, new Rect(0, 0, getWidth(),
+							getHeight()))) {
+						r.move(0, (int)point.y - r.origenYRelativo); // 0 para no mover eje X
 
+					}
+					r.origenYRelativo = (int)point.y;
+				}
+				
 			}
-			origenY = y;
 			break;
 		case MotionEvent.ACTION_UP:// hemos levantado
-			elementoActivo = null;
+			mActivePointers.remove(pointerId);
 			break;
 		}
 
