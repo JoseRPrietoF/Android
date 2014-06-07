@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:key="@string/pa_key">
+    android:key="preferencias_principal" >
 
     <CheckBoxPreference
-        android:key="@string/sonido_key"
-        android:summary="@string/sonido_summary"
-        android:title="@string/sonido_title" 
-        android:enabled="true"/>
+        android:key="music"
+        android:title="Musica de la aplicacion" />
+    <CheckBoxPreference
+        android:key="vibration"
+        android:title="Vibración al golpear la bola" />
+
+    <ListPreference
+        android:entries="@array/SpeedName"
+        android:entryValues="@array/speedValor"
+        android:key="speed"
+        android:title="Velocidad de la bola"
+        android:defaultValue="Normal" />
+    
+    <ListPreference
+        android:entries="@array/sizeName"
+        android:entryValues="@array/sizeValor"
+        android:key="size"
+        android:title="Tamaño de las raquetas"
+        android:defaultValue="1" />
+    <ListPreference
+        android:entries="@array/ColorName"
+        android:entryValues="@array/ColorName"
+        android:key="colorRaqueta"
+        android:title="Color de las raquetas"
+        android:defaultValue="Cyan" />
 
 </PreferenceScreen>

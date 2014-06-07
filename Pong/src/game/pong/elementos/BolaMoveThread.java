@@ -1,7 +1,7 @@
 package game.pong.elementos;
 
 import game.pong.Marcador;
-import opciones.Opciones;
+import opciones.OpcionesSingleton;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Vibrator;
@@ -12,9 +12,12 @@ public class BolaMoveThread extends Thread {
 	private Raqueta raquetaIzda;
 	private Raqueta raquetaDcha;
 	private Rect screen;
+	private Context context;
+	private OpcionesSingleton mOpcionesSingleton;
 
 	private boolean run;
 	private int speed = 1;
+	private int speedSleep = 5;
 	
 	private Vibrator v = null;
 	
@@ -27,6 +30,7 @@ public class BolaMoveThread extends Thread {
 
 	public BolaMoveThread(Bola bola, Raqueta izda, Raqueta dcha, 
 			Rect screen, Context context, Marcador marcador) {
+		mOpcionesSingleton = OpcionesSingleton.getInstance(context);
 		this.bola = bola;
 		this.bolaInitX = bola.getOrigenX();
 		this.bolaInitY = bola.getOrigenY();
@@ -37,6 +41,7 @@ public class BolaMoveThread extends Thread {
 		this.marcador = marcador;
 		this.punto = false;
 		this.v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+		this.context = context;
 	}
 
 	public void setRunning(boolean run) {
@@ -46,8 +51,13 @@ public class BolaMoveThread extends Thread {
 	@Override
 	public void run() {
 		while (run) {
+			speedSleep = mOpcionesSingleton.getSpeedBall();
+			if (speedSleep == 0){
+				speedSleep = 2;
+				speed = 4;
+			}
 			try {
-				Thread.sleep(5); // duerme 5ms cada movimiento,
+				Thread.sleep(speedSleep); // duerme 5ms cada movimiento,
 				// Si restamos, aumenta la velocidad.
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -76,7 +86,7 @@ public class BolaMoveThread extends Thread {
 						raquetaIzda.getRectElemento(), raquetaDcha.getRectElemento())) {
 				case 0: // Bola rebota en raqueta y sigue:
 					if(bola.canMove(speed, speed, screen) &&
-							Opciones.getInstance().vibrationEnabled())
+							OpcionesSingleton.getInstance(context).isVibracion())
 							v.vibrate(50);
 					break;
 				case -1: // Entro por la Izda, punto para derecha

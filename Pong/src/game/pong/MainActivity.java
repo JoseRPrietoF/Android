@@ -1,6 +1,6 @@
 package game.pong;
 
-import opciones.Opciones;
+import opciones.OpcionesSingleton;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.app.Activity;
@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		opciones.setOnClickListener(this);
 		salir = (TextView) findViewById(R.id.salir);
 		salir.setOnClickListener(this);
-		if (Opciones.getInstance().soundEnabled()){
+		if (OpcionesSingleton.getInstance(this).isSonido()){
 			mp = MediaPlayer.create(this, R.raw.audio );
 			mp.start();
 		}
@@ -67,7 +67,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 	public void lanzarOpciones(View view) {
 		Intent opciones = new Intent(this, PongOpcionesActivity.class);
-		this.startActivity(opciones);
+		startActivity(opciones);
 	}
 
 	public void lanzarJuego(View view) {
@@ -100,7 +100,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		if (Opciones.getInstance().soundEnabled()){
+		if (OpcionesSingleton.getInstance(this).isSonido()){
 			mp.pause();
 			pos=mp.getCurrentPosition();
 		}
@@ -109,7 +109,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if (Opciones.getInstance().soundEnabled()){
+		if (OpcionesSingleton.getInstance(this).isSonido()){
 			mp.seekTo(pos);
 			mp.start();	
 		}

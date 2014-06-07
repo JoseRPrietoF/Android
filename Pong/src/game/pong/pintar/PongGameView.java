@@ -1,5 +1,6 @@
 package game.pong.pintar;
 
+import opciones.OpcionesSingleton;
 import game.pong.Marcador;
 import game.pong.elementos.Bola;
 import game.pong.elementos.BolaMoveThread;
@@ -21,38 +22,68 @@ import android.view.SurfaceView;
 
 public class PongGameView extends SurfaceView implements SurfaceHolder.Callback {
 
-	public static final int UMBRAL_TACTIL = 70;
+	public static final int UMBRAL_TACTIL = 140;
 	// Constante para ampliar los movimientos con la parte tactil
 
 	private PongGameThread paintThread;
 	private BolaMoveThread bolaThread;
+	private OpcionesSingleton mOpcionesSingleton;
 
 	private Elemento raquetaIzda;
 	private Elemento raquetaDcha;
 	private Elemento bola;
+	private int mAltoRaqueta = 100;
 	//private int origenY;
 	private SparseArray<Point> mActivePointers;
 
 	// Marcador
 	private Marcador marcador;
-	private Paint paint; // SE cargara aqui la fuente nueva
+	private Paint paintBall; // SE cargara aqui la fuente nueva
+	private Paint paintRaqueta; 
 	// Ya que si la cargamos cada vez, puede consumir muchisimos recursos
 
 	public PongGameView(Context context,  int puntosIzda, int puntosDcha) {
 		super(context);
 		getHolder().addCallback(this); // Para usar SurfaceView
 		// Creamos marcador, posiblemente con puntos de partida sin acabar
+		mOpcionesSingleton = OpcionesSingleton.getInstance(context);
 		mActivePointers = new SparseArray<Point>();
 		this.marcador = new Marcador(puntosIzda, puntosDcha);
 		// Cargaremos fuente, asignaremos color..
-		paint = new Paint();
-		paint.setColor(Color.WHITE);
-		paint.setTextAlign(Align.CENTER);
-		paint.setTypeface(Typeface.createFromAsset(this.getContext()
+		paintBall = new Paint();
+		getcolorRaquetas();
+		paintBall.setColor(Color.WHITE);
+		paintBall.setTextAlign(Align.CENTER);
+		paintBall.setTypeface(Typeface.createFromAsset(this.getContext()
 				.getAssets(), "fonts/Frijole-Regular.ttf"));
 		// SE ha cargado la fuente
-		paint.setTextSize(80);
-		paint.setAntiAlias(true);
+		paintBall.setTextSize(80);
+		paintBall.setAntiAlias(true);
+		mAltoRaqueta = mOpcionesSingleton.getTamanyRaquetes();
+	}
+	
+	private void getcolorRaquetas(){
+		paintRaqueta = new Paint();
+		switch(mOpcionesSingleton.getColorRaquetas()){
+		case "Cyan":
+			paintRaqueta.setColor(Color.CYAN);
+			break;
+		case "Blau":
+			paintRaqueta.setColor(Color.BLUE);
+			break;
+		case "Vermell":
+			paintRaqueta.setColor(Color.RED);
+			break;
+		case "Groc":
+			paintRaqueta.setColor(Color.YELLOW);
+			break;
+		case "Blanc":
+			paintRaqueta.setColor(Color.WHITE);
+			break;
+		case "Rosa":
+			paintRaqueta.setColor(Color.MAGENTA);
+			break;
+		}
 	}
 
 	@Override
@@ -63,9 +94,9 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		raquetaIzda = new Raqueta(new Coordenada(50, getHeight() / 2 - 50), 20,
-				100);
+				mAltoRaqueta);
 		raquetaDcha = new Raqueta(new Coordenada(getWidth() - 70,
-				getHeight() / 2 - 50), 20, 100);
+				getHeight() / 2 - 50), 20, mAltoRaqueta);
 		bola = new Bola(
 				new Coordenada(getWidth() / 2 - 5, getHeight() / 2 - 5), 10, 10);
 
@@ -102,9 +133,9 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		canvas.drawColor(Color.BLACK);
 		drawCenterLine(canvas);
 		drawMarcador(canvas);
-		canvas.drawRect(raquetaIzda.getRectElemento(), paint);
-		canvas.drawRect(raquetaDcha.getRectElemento(), paint);
-		canvas.drawRect(bola.getRectElemento(), paint);
+		canvas.drawRect(raquetaIzda.getRectElemento(), paintRaqueta);
+		canvas.drawRect(raquetaDcha.getRectElemento(), paintRaqueta);
+		canvas.drawRect(bola.getRectElemento(), paintBall);
 	}
 
 	@Override
@@ -201,7 +232,7 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 		// Pintamos cada uno de los tramos de manera discontinua
 		for (int i = 0; i < this.getHeight() / (hLine + espacio); i++) {
 			canvas.drawRect(this.getWidth() / 2 - wLine / 2, ini,
-					this.getWidth() / 2 + wLine / 2, ini + hLine, paint);
+					this.getWidth() / 2 + wLine / 2, ini + hLine, paintBall);
 			ini += hLine + espacio;
 		}
 	}
@@ -209,9 +240,9 @@ public class PongGameView extends SurfaceView implements SurfaceHolder.Callback 
 	// Método para dibujar marcador
 	private void drawMarcador(Canvas canvas) {
 		canvas.drawText(Integer.toString(marcador.getPuntosIzda()),
-				getWidth() / 2 - 80, 80, paint);
+				getWidth() / 2 - 80, 80, paintBall);
 		canvas.drawText(Integer.toString(marcador.getPuntosDcha()),
-				getWidth() / 2 + 80, 80, paint);
+				getWidth() / 2 + 80, 80, paintBall);
 		// Pintamos los puntos de cada lado 80px de distancia de la linea divisoria
 	}
 

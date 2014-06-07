@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="SpeedName">
+        <item>Muy lenta</item>
+        <item>Lenta</item>
+        <item>Normal</item>
+        <item>Rapida</item>
+        <item>Muy Rapida</item>
+        <item>Extrema</item>
+    </string-array>
+    <string-array name="speedValor">
+        <item>5</item>
+        <item>4</item>
+        <item>3</item>
+        <item>2</item>
+        <item>1</item>
+        <item>0</item>
+    </string-array>
+    <string-array name="sizeName">
+        <item>Molt petites</item>
+        <item>Petites</item>
+        <item>Normals</item>
+        <item>Grans</item>
+        <item>Molt grans</item>
+    </string-array>
+     <string-array name="sizeValor">
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+        <item>200</item>
+        <item>300</item>
+    </string-array>
+    <string-array name="ColorName">
+        <item>Blau</item>
+        <item>Vermell</item>
+        <item>Groc</item>
+        <item>Blanc</item>
+        <item>Rosa</item>
+        <item>Cyan</item>
+    </string-array>
+
+</resources>
